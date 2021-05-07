@@ -2,49 +2,32 @@
 
 namespace waytohealth\OAuth2\Client\Provider;
 
+use Exception;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
+// use waytohealth\OAuth2\Client\Token\AccessToken;
 
-class Withings extends AbstractProvider
+class Omron extends AbstractProvider
 {
     use BearerAuthorizationTrait;
 
     /**
-     * Withings URL.
-     *
-     * @const string
+     * @var string
      */
-    const BASE_WITHINGS_URL = 'https://account.withings.com';
+    protected $authHostname;
 
     /**
-     * Withings API URL
-     *
-     * @const string
+     * @var string
      */
-    const BASE_WITHINGS_API_URL = 'https://wbsapi.withings.net';
-
-    /**
-     * HTTP header Accept-Language.
-     *
-     * @const string
-     */
-    const HEADER_ACCEPT_LANG = 'Accept-Language';
-
-    /**
-     * HTTP header Accept-Locale.
-     *
-     * @const string
-     */
-    const HEADER_ACCEPT_LOCALE = 'Accept-Locale';
+    protected $apiUrl;
 
     /**
      * @var string Key used in a token response to identify the resource owner.
      */
-    const ACCESS_TOKEN_RESOURCE_OWNER_ID = 'userid';
+    const ACCESS_TOKEN_RESOURCE_OWNER_ID = 'sub';
 
     /**
      * Get authorization url to begin OAuth flow.
@@ -53,7 +36,7 @@ class Withings extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return static::BASE_WITHINGS_URL.'/oauth2_user/authorize2';
+        return $this->authHostname . '/connect/authorize';
     }
 
     /**
@@ -65,34 +48,27 @@ class Withings extends AbstractProvider
      */
     public function getBaseAccessTokenUrl(array $params)
     {
-        return static::BASE_WITHINGS_URL.'/oauth2/token';
+        return $this->authHostname . '/connect/token';
     }
 
     /**
-     * Returns the url to retrieve the resource owners's profile/details.
-     *
-     * @param AccessToken $token
-     *
-     * @return string
-     */
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
-    {
-        return static::BASE_WITHINGS_API_URL.'/v2/user?action=getdevice&access_token='.$token->getToken();
-    }
-
-    /**
-     * Returns all scopes available from Withings.
+     * Returns all scopes available from Omron.
      * It is recommended you only request the scopes you need!
      *
      * @return array
      */
     protected function getDefaultScopes()
     {
-        return ['user.info', 'user.metrics', 'user.activity'];
+        return ['openid', 'offline_access', 'bloodpressure', 'activity'];
+    }
+
+    protected function getDefaultHeaders()
+    {
+        return ['Content-Type' => 'application/x-www-form-urlencoded'];
     }
 
     /**
-     * Checks Withings API response for errors.
+     * Checks Omron API response for errors.
      *
      * @throws IdentityProviderException
      *
@@ -115,7 +91,7 @@ class Withings extends AbstractProvider
 
     /**
      * Returns authorization parameters based on provided options.
-     * Withings does not use the 'approval_prompt' param and here we remove it.
+     * Omron does not use the 'approval_prompt' param and here we remove it.
      *
      * @param array $options
      *
@@ -132,6 +108,11 @@ class Withings extends AbstractProvider
         return $params;
     }
 
+    public function getResourceOwnerDetailsUrl(\League\OAuth2\Client\Token\AccessToken $token)
+    {
+        return '';
+    }
+
     /**
      * Generates a resource owner object from a successful resource owner
      * details request.
@@ -141,24 +122,42 @@ class Withings extends AbstractProvider
      *
      * @return GenericResourceOwner
      */
-    public function createResourceOwner(array $response, AccessToken $token)
+    public function createResourceOwner(array $response, \League\OAuth2\Client\Token\AccessToken $token)
     {
         return new GenericResourceOwner($response, self::ACCESS_TOKEN_RESOURCE_OWNER_ID);
     }
 
     /**
+     * Requests and returns the resource owner of given access token.
+     *
+     * @param  AccessToken $token
+     * @return ResourceOwnerInterface
+     */
+    public function getResourceOwner(\League\OAuth2\Client\Token\AccessToken $token)
+    {
+        // $jwt = (string) $token;
+        // try {
+        //     $values = $token->getDecodedIdToken();
+        //     return $this->createResourceOwner($values, $token);
+        // }  catch (Exception $e) {
+        //     // ignore errors?
+        // }
+        return parent::getResourceOwner($token);
+    }
+
+    /**
      * Revoke access for the given token.
      *
-     * @param AccessToken $accessToken
+     * @param OmronAccessToken $accessToken
      *
      * @return mixed
      */
-    public function revoke(AccessToken $accessToken)
+    public function revoke(\League\OAuth2\Client\Token\AccessToken $accessToken)
     {
         $options = $this->optionProvider->getAccessTokenOptions($this->getAccessTokenMethod(), []);
         $uri = $this->appendQuery(
-            self::BASE_WITHINGS_API_URL.'/notify?action=revoke',
-            $this->buildQueryString(['token' => $accessToken->getToken()])
+            $this->authHostname . '/connect/revocation',
+            $this->buildQueryString(['token' => $accessToken->getToken(), 'token_type_hint' => 'access_token'])
         );
         $request = $this->getRequest(self::METHOD_POST, $uri, $options);
 

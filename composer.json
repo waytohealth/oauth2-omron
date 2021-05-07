@@ -1,6 +1,6 @@
 {
-    "name": "waytohealth/oauth2-withings",
-    "description": "Withings OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+    "name": "waytohealth/oauth2-omron",
+    "description": "Omron OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
     "license": "MIT",
     "authors": [
         {
@@ -15,11 +15,12 @@
         "client",
         "authorization",
         "authentication",
-        "withings"
+        "omron"
     ],
     "require": {
         "php": ">=5.6.0",
-        "league/oauth2-client": "2.4.*"
+        "league/oauth2-client": "2.4.*",
+        "firebase/php-jwt": "5.2.*"
     },
     "require-dev": {
         "mockery/mockery": "~0.9",

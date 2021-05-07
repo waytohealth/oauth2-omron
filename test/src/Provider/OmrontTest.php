@@ -2,14 +2,14 @@
 
 namespace waytohealth\OAuth2\Client\Test\Provider;
 
-use waytohealth\OAuth2\Client\Provider\Withings;
+use waytohealth\OAuth2\Client\Provider\Omron;
 use League\OAuth2\Client\Token\AccessToken;
 use Mockery;
 use PHPUnit_Framework_TestCase as TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
 
-class WithingsTest extends TestCase
+class OmronTest extends TestCase
 {
     public static function callMethod($obj, $name, array $args) {
         $class = new \ReflectionClass($obj);
@@ -22,7 +22,7 @@ class WithingsTest extends TestCase
 
     protected function setUp()
     {
-        $this->provider = new Withings([
+        $this->provider = new Omron([
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',

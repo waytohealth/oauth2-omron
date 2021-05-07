@@ -1,6 +1,6 @@
-# Withings Provider for OAuth 2.0 Client
+# Omron Provider for OAuth 2.0 Client
 
-This package provides Withings OAuth 2.0 support for the PHP League's [OAuth 2.0 Client](https://github.com/thephpleague/oauth2-client).
+This package provides Omron OAuth 2.0 support for the PHP League's [OAuth 2.0 Client](https://github.com/thephpleague/oauth2-client).
 
 This package is compliant with [PSR-1][], [PSR-2][], [PSR-4][], and [PSR-7][]. If you notice compliance oversights, please send a patch via pull request.
 
@@ -18,7 +18,7 @@ The following versions of PHP are supported.
 To install, use composer:
 
 ```
-composer require waytohealth/oauth2-withings
+composer require waytohealth/oauth2-omron
 ```
 
 ## Usage
@@ -26,11 +26,11 @@ composer require waytohealth/oauth2-withings
 ### Authorization Code Grant
 
 ```php
-use waytohealth\OAuth2\Client\Provider\Withings;
+use waytohealth\OAuth2\Client\Provider\Omron;
 
-$provider = new Withings([
-    'clientId'          => '{withings-oauth2-client-id}',
-    'clientSecret'      => '{withings-client-secret}',
+$provider = new Omron([
+    'clientId'          => '{omron-oauth2-client-id}',
+    'clientSecret'      => '{omron-client-secret}',
     'redirectUri'       => 'https://example.com/callback-url'
 ]);
 
@@ -114,10 +114,12 @@ if (!isset($_GET['code'])) {
 Once your application is authorized, you can refresh an expired token using a refresh token rather than going through the entire process of obtaining a brand new token. To do so, simply reuse this refresh token from your data store to request a refresh.
 
 ```php
-$provider = new waytohealth\OAuth2\Client\Provider\Withings([
-    'clientId'          => '{withings-oauth2-client-id}',
-    'clientSecret'      => '{withings-client-secret}',
-    'redirectUri'       => 'https://example.com/callback-url'
+$provider = new waytohealth\OAuth2\Client\Provider\Omron([
+    'clientId'          => '{omron-oauth2-client-id}',
+    'clientSecret'      => '{omron-client-secret}',
+    'redirectUri'       => 'https://example.com/callback-url',
+    'authHostname'      => 'https://oauth.omronwellness.com',
+    'apiUrl'            => 'https://api.omronwellness.com/api/measurement'
 ]);
 
 $existingAccessToken = getAccessTokenFromYourDataStore();
@@ -139,11 +141,11 @@ $ ./vendor/bin/phpunit
 
 ## Contributing
 
-Please see [CONTRIBUTING](https://github.com/waytohealth/oauth2-withings/blob/master/CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](https://github.com/waytohealth/oauth2-omron/blob/master/CONTRIBUTING.md) for details.
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/waytohealth/oauth2-withings/blob/master/LICENSE) for more information.
+The MIT License (MIT). Please see [License File](https://github.com/waytohealth/oauth2-omron/blob/master/LICENSE) for more information.
 
 [PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
