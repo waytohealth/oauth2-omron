@@ -38,5 +38,6 @@
         "psr-4": {
             "waytohealth\\OAuth2\\Client\\Test\\": "tests/src/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
