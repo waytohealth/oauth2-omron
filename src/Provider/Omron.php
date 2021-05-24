@@ -8,7 +8,6 @@ use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
-// use waytohealth\OAuth2\Client\Token\AccessToken;
 
 class Omron extends AbstractProvider
 {
@@ -18,11 +17,6 @@ class Omron extends AbstractProvider
      * @var string
      */
     protected $authHostname;
-
-    /**
-     * @var string
-     */
-    protected $apiUrl;
 
     /**
      * @var string Key used in a token response to identify the resource owner.
@@ -59,7 +53,11 @@ class Omron extends AbstractProvider
      */
     protected function getDefaultScopes()
     {
-        return ['openid', 'offline_access', 'bloodpressure', 'activity'];
+        return ['openid', 'offline_access', 'bloodpressure'];
+    }
+    protected function getScopeSeparator()
+    {
+        return ' ';
     }
 
     protected function getDefaultHeaders()
@@ -125,24 +123,6 @@ class Omron extends AbstractProvider
     public function createResourceOwner(array $response, \League\OAuth2\Client\Token\AccessToken $token)
     {
         return new GenericResourceOwner($response, self::ACCESS_TOKEN_RESOURCE_OWNER_ID);
-    }
-
-    /**
-     * Requests and returns the resource owner of given access token.
-     *
-     * @param  AccessToken $token
-     * @return ResourceOwnerInterface
-     */
-    public function getResourceOwner(\League\OAuth2\Client\Token\AccessToken $token)
-    {
-        // $jwt = (string) $token;
-        // try {
-        //     $values = $token->getDecodedIdToken();
-        //     return $this->createResourceOwner($values, $token);
-        // }  catch (Exception $e) {
-        //     // ignore errors?
-        // }
-        return parent::getResourceOwner($token);
     }
 
     /**
