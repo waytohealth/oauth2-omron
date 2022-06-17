@@ -58,18 +58,18 @@ class OmronTest extends TestCase
 
     public function testScopes()
     {
-        $scopes = ['user.info', 'user.metrics', 'user.activity'];
+        $scopes = ['openid', 'offline_access', 'bloodpressure'];
 
         $url = $this->provider->getAuthorizationUrl();
         $uri = parse_url($url);
-        $this->assertContains(urlencode(implode(',', $scopes)), $url);
+        $this->assertContains(implode('%20', $scopes), $url);
     }
 
     public function testGetAuthorizationUrl()
     {
         $url = $this->provider->getAuthorizationUrl();
         $uri = parse_url($url);
-        $this->assertEquals('/oauth2_user/authorize2', $uri['path']);
+        $this->assertEquals('/connect/authorize', $uri['path']);
     }
 
     public function testGetBaseAccessTokenUrl()
@@ -77,7 +77,7 @@ class OmronTest extends TestCase
         $params = [];
         $url = $this->provider->getBaseAccessTokenUrl($params);
         $uri = parse_url($url);
-        $this->assertEquals('/oauth2/token', $uri['path']);
+        $this->assertEquals('/connect/token', $uri['path']);
     }
 
     public function testGetResourceOwnerDetailsUrl()
