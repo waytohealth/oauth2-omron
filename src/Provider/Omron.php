@@ -19,6 +19,11 @@ class Omron extends AbstractProvider
     protected $authHostname;
 
     /**
+     * @var string
+     */
+    protected $tokenHostname;
+
+    /**
      * @var string Key used in a token response to identify the resource owner.
      */
     const ACCESS_TOKEN_RESOURCE_OWNER_ID = 'sub';
@@ -42,7 +47,7 @@ class Omron extends AbstractProvider
      */
     public function getBaseAccessTokenUrl(array $params)
     {
-        return $this->authHostname . '/connect/token';
+        return $this->tokenHostname . '/connect/token';
     }
 
     /**
@@ -136,7 +141,7 @@ class Omron extends AbstractProvider
     {
         $options = $this->optionProvider->getAccessTokenOptions($this->getAccessTokenMethod(), []);
         $uri = $this->appendQuery(
-            $this->authHostname . '/connect/revocation',
+            $this->tokenHostname . '/connect/revocation',
             $this->buildQueryString(['token' => $accessToken->getToken(), 'token_type_hint' => 'access_token'])
         );
         $request = $this->getRequest(self::METHOD_POST, $uri, $options);
