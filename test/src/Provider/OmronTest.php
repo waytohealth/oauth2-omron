@@ -25,6 +25,8 @@ class OmronTest extends TestCase
         $this->provider = new Omron([
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
+            'authHostname' => 'https://stg-oauth-website.ohiomron.com',
+            'tokenHostname' => 'https://stg-oauth.ohiomron.com/stg',
             'redirectUri' => 'none',
         ]);
 
@@ -69,6 +71,8 @@ class OmronTest extends TestCase
     {
         $url = $this->provider->getAuthorizationUrl();
         $uri = parse_url($url);
+
+        $this->assertEquals('stg-oauth-website.ohiomron.com', $uri['host']);
         $this->assertEquals('/connect/authorize', $uri['path']);
     }
 
@@ -77,14 +81,16 @@ class OmronTest extends TestCase
         $params = [];
         $url = $this->provider->getBaseAccessTokenUrl($params);
         $uri = parse_url($url);
-        $this->assertEquals('/connect/token', $uri['path']);
+
+        $this->assertEquals('stg-oauth.ohiomron.com', $uri['host']);
+        $this->assertEquals('/stg/connect/token', $uri['path']);
     }
 
     public function testGetResourceOwnerDetailsUrl()
     {
         $url = $this->provider->getResourceOwnerDetailsUrl($this->token);
         $uri = parse_url($url);
-        $this->assertEquals('/v2/user', $uri['path']);
+        $this->assertEquals('', $uri['path']);
         $this->assertEquals('action=getdevice&access_token=mock_token', $uri['query']);
     }
 
